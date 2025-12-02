@@ -31,16 +31,17 @@ export async function loadGameFromComments() {
   }
 }
 
-export async function saveGameToComment(gameState, screenshotBlob) {
+export async function saveGameToComment(gameState, mediaBlob) {
   try {
     const jsonStr = JSON.stringify(gameState);
-    const content = `BROADCAST ARCHIVE\n\n${SAVE_PREFIX}${jsonStr}:::`;
+    const content = `${SAVE_PREFIX}${jsonStr}:::`;
 
-    let imageUrls = [];
-    if (screenshotBlob) {
+    let mediaUrls = [];
+    if (mediaBlob) {
       try {
-        const url = await window.websim.upload(screenshotBlob);
-        imageUrls.push(url);
+        const file = new File([mediaBlob], "broadcast.webm", { type: 'video/webm' });
+        const url = await window.websim.upload(file);
+        mediaUrls.push(url);
       } catch (uploadErr) {
         console.error("Failed to upload broadcast clip:", uploadErr);
       }
@@ -48,7 +49,7 @@ export async function saveGameToComment(gameState, screenshotBlob) {
 
     await window.websim.postComment({
       content: content,
-      images: imageUrls
+      images: mediaUrls
     });
     return true;
   } catch (err) {
