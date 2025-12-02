@@ -262,7 +262,7 @@ function App() {
                 fileName: "<stdin>",
                 lineNumber: 226,
                 columnNumber: 24
-              }, this) : /* @__PURE__ */ jsxDEV(Save, { size: 16 }, void 0, false, {
+              }, this) : /* @__PURE__ */ jsxDEV("img", { src: "/tape_icon.png", style: { width: 16, height: 16, objectFit: "contain" } }, void 0, false, {
                 fileName: "<stdin>",
                 lineNumber: 226,
                 columnNumber: 72

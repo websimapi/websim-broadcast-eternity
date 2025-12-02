@@ -64,7 +64,7 @@ const GameComposition = ({ history, currentLevel, score, username }) => {
     /* @__PURE__ */ jsxDEV("div", { style: {
       position: "absolute",
       inset: 0,
-      background: "url(./static_overlay.png)",
+      background: "url(/static_overlay.png)",
       opacity: 0.15,
       backgroundSize: "cover",
       mixBlendMode: "overlay"
