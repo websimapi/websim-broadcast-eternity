@@ -31,17 +31,24 @@ export async function loadGameFromComments() {
   }
 }
 
-export async function saveGameToComment(gameState) {
+export async function saveGameToComment(gameState, screenshotBlob) {
   try {
     const jsonStr = JSON.stringify(gameState);
     const content = `BROADCAST ARCHIVE\n\n${SAVE_PREFIX}${jsonStr}:::`;
 
-    // We can assume tape_icon.png is uploaded or just reference it if it was a blob.
-    // Since we can't easily get the blob URL of the asset generated here in a simple script,
-    // we will just post the text content. The game is the clip.
+    let imageUrls = [];
+    if (screenshotBlob) {
+      try {
+        const url = await window.websim.upload(screenshotBlob);
+        imageUrls.push(url);
+      } catch (uploadErr) {
+        console.error("Failed to upload broadcast clip:", uploadErr);
+      }
+    }
 
     await window.websim.postComment({
-      content: content
+      content: content,
+      images: imageUrls
     });
     return true;
   } catch (err) {

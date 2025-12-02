@@ -4,6 +4,44 @@ import { Player } from "@websim/remotion/player";
 import { GameComposition } from "./GameComposition.jsx";
 import { loadGameFromComments, saveGameToComment } from "./utils.js";
 import { Mic, Disc, Save, Play, Square, Share2, Loader2 } from "lucide-react";
+const generateThumbnail = async (score, level, username, history) => {
+  const canvas = document.createElement("canvas");
+  canvas.width = 640;
+  canvas.height = 360;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#0a0a0a";
+  ctx.fillRect(0, 0, 640, 360);
+  ctx.fillStyle = "rgba(0, 255, 255, 0.05)";
+  for (let i = 0; i < 360; i += 3) {
+    ctx.fillRect(0, i, 640, 1);
+  }
+  ctx.font = 'bold 28px "Courier New", monospace';
+  ctx.fillStyle = "#00ffaa";
+  ctx.shadowColor = "#00ffaa";
+  ctx.shadowBlur = 10;
+  ctx.fillText("BROADCAST ARCHIVE", 40, 50);
+  ctx.shadowBlur = 0;
+  ctx.font = '18px "Courier New", monospace';
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(`OPERATOR: ${username}`, 40, 100);
+  ctx.fillText(`SCORE: ${score}`, 40, 130);
+  ctx.fillText(`SYNC LEVEL: ${level}`, 40, 160);
+  ctx.fillText(`DATA POINTS: ${history.length}`, 40, 190);
+  ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+  ctx.beginPath();
+  ctx.arc(550, 180, 50, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.moveTo(535, 155);
+  ctx.lineTo(575, 180);
+  ctx.lineTo(535, 205);
+  ctx.fill();
+  ctx.fillStyle = "#666";
+  ctx.font = "12px monospace";
+  ctx.fillText((/* @__PURE__ */ new Date()).toISOString(), 40, 320);
+  return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+};
 function App() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -84,7 +122,13 @@ function App() {
       level,
       timestamp: Date.now()
     };
-    const success = await saveGameToComment(gameState);
+    let thumbnailBlob = null;
+    try {
+      thumbnailBlob = await generateThumbnail(score, level, userData.username, history);
+    } catch (e) {
+      console.error("Thumbnail generation failed:", e);
+    }
+    const success = await saveGameToComment(gameState, thumbnailBlob);
     if (success) {
       alert("BROADCAST ARCHIVED SUCCESSFULLY.");
     } else {
@@ -96,17 +140,17 @@ function App() {
     return /* @__PURE__ */ jsxDEV("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", color: "#0ff" }, children: [
       /* @__PURE__ */ jsxDEV(Loader2, { className: "animate-spin", size: 48 }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 121,
+        lineNumber: 180,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV("p", { children: "INITIALIZING BROADCAST UPLINK..." }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 122,
+        lineNumber: 181,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 120,
+      lineNumber: 179,
       columnNumber: 7
     }, this);
   }
@@ -147,7 +191,7 @@ function App() {
         false,
         {
           fileName: "<stdin>",
-          lineNumber: 139,
+          lineNumber: 198,
           columnNumber: 9
         },
         this
@@ -171,7 +215,7 @@ function App() {
           children: [
             /* @__PURE__ */ jsxDEV(Play, { size: 24, style: { display: "inline", marginRight: 8 } }, void 0, false, {
               fileName: "<stdin>",
-              lineNumber: 180,
+              lineNumber: 239,
               columnNumber: 16
             }, this),
             history.length > 0 ? "RESUME SIGNAL" : "START BROADCAST"
@@ -181,38 +225,38 @@ function App() {
         true,
         {
           fileName: "<stdin>",
-          lineNumber: 175,
+          lineNumber: 234,
           columnNumber: 14
         },
         this
       ) : /* @__PURE__ */ jsxDEV(Fragment, { children: [
         /* @__PURE__ */ jsxDEV("button", { onClick: () => handleAction("sync", 0), className: "game-btn red", children: "MOD A" }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 185,
+          lineNumber: 244,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("button", { onClick: () => handleAction("sync", 1), className: "game-btn blue", children: "MOD B" }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 186,
+          lineNumber: 245,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("button", { onClick: () => handleAction("sync", 2), className: "game-btn yellow", children: "MOD C" }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 187,
+          lineNumber: 246,
           columnNumber: 15
         }, this),
         /* @__PURE__ */ jsxDEV("button", { onClick: () => handleAction("shape", Math.floor(Math.random() * 5)), className: "game-btn purple", children: "SHIFT" }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 188,
+          lineNumber: 247,
           columnNumber: 15
         }, this)
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 184,
+        lineNumber: 243,
         columnNumber: 13
       }, this) }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 163,
+        lineNumber: 222,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV("div", { style: {
@@ -229,17 +273,17 @@ function App() {
         /* @__PURE__ */ jsxDEV("div", { style: { display: "flex", gap: 10, alignItems: "center" }, children: [
           /* @__PURE__ */ jsxDEV("div", { style: { width: 12, height: 12, borderRadius: "50%", background: playing ? "#f00" : "#444" } }, void 0, false, {
             fileName: "<stdin>",
-            lineNumber: 206,
+            lineNumber: 265,
             columnNumber: 15
           }, this),
           /* @__PURE__ */ jsxDEV("span", { style: { fontWeight: "bold", letterSpacing: 2 }, children: playing ? "ON AIR" : "OFFLINE" }, void 0, false, {
             fileName: "<stdin>",
-            lineNumber: 207,
+            lineNumber: 266,
             columnNumber: 15
           }, this)
         ] }, void 0, true, {
           fileName: "<stdin>",
-          lineNumber: 205,
+          lineNumber: 264,
           columnNumber: 12
         }, this),
         /* @__PURE__ */ jsxDEV(
@@ -260,11 +304,11 @@ function App() {
             children: [
               saving ? /* @__PURE__ */ jsxDEV(Loader2, { className: "animate-spin", size: 16 }, void 0, false, {
                 fileName: "<stdin>",
-                lineNumber: 226,
+                lineNumber: 285,
                 columnNumber: 24
               }, this) : /* @__PURE__ */ jsxDEV("img", { src: "/tape_icon.png", style: { width: 16, height: 16, objectFit: "contain" } }, void 0, false, {
                 fileName: "<stdin>",
-                lineNumber: 226,
+                lineNumber: 285,
                 columnNumber: 72
               }, this),
               "ARCHIVE TAPE"
@@ -274,19 +318,19 @@ function App() {
           true,
           {
             fileName: "<stdin>",
-            lineNumber: 212,
+            lineNumber: 271,
             columnNumber: 12
           },
           this
         )
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 194,
+        lineNumber: 253,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 138,
+      lineNumber: 197,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("style", { children: `
@@ -323,12 +367,12 @@ function App() {
         }
       ` }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 232,
+      lineNumber: 291,
       columnNumber: 7
     }, this)
   ] }, void 0, true, {
     fileName: "<stdin>",
-    lineNumber: 128,
+    lineNumber: 187,
     columnNumber: 5
   }, this);
 }
